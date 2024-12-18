@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import RemoveBtn from './RemoveBtn'; // RemoveBtn 컴포넌트 import
 import Link from 'next/link';
@@ -16,15 +15,18 @@ export default function BoardList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''; // 배포 환경에서 API URL을 가져옴
+
   const fetchBoards = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/boards', {
+      // 절대 URL을 사용하여 API 호출
+      const res = await fetch(`${apiUrl}/api/boards`, { 
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        cache: 'no-store'
+        cache: 'no-store',
       });
 
       if (!res.ok) {
@@ -54,7 +56,7 @@ export default function BoardList() {
 
   const handleDeleteBoard = async (boardId: string) => {
     try {
-      const res = await fetch(`/api/boards/${boardId}`, {
+      const res = await fetch(`${apiUrl}/api/boards/${boardId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -124,9 +126,11 @@ export default function BoardList() {
       {/* 게시판 카드 그리드 */}
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-full px-4">
         {boards.map((board) => (
-          <li key={board._id} 
-              className="flex flex-col justify-between items-start bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-              style={{ height: '200px', width: '200px' }}> {/* 정사각형 모양 유지 */}
+          <li
+            key={board._id}
+            className="flex flex-col justify-between items-start bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+            style={{ height: '200px', width: '200px' }} // 정사각형 모양 유지
+          >
             {/* 정사각형 카드 디자인 */}
             <span className="text-xl font-semibold text-black">{board.title}</span>
             <span className="text-sm text-gray-500">{new Date(board.createdAt).toLocaleDateString()}</span> {/* 작성 날짜 추가 */}
@@ -137,16 +141,16 @@ export default function BoardList() {
 
       {/* 추가 버튼 */}
       <Link
-          href="/addBoard"
-          className="fixed bottom-8 right-8 bg-gray-600 text-white rounded-full p-4
-            hover:bg-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl
-            transform hover:-translate-y-1 group flex items-center gap-2"
-        >
-          <FiPlus className="w-6 h-6" />
-          <span className="hidden group-hover:inline whitespace-nowrap pr-2">
-            기록장 쓰기
-          </span>
-        </Link>
+        href="/addBoard"
+        className="fixed bottom-8 right-8 bg-gray-600 text-white rounded-full p-4
+        hover:bg-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl
+        transform hover:-translate-y-1 group flex items-center gap-2"
+      >
+        <FiPlus className="w-6 h-6" />
+        <span className="hidden group-hover:inline whitespace-nowrap pr-2">
+          기록장 쓰기
+        </span>
+      </Link>
     </div>
   );
 }
