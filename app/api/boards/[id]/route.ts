@@ -1,60 +1,42 @@
-import connectMongoDB from '@/libs/mongodb'
-import Board from '@/models/board'
-import { NextRequest, NextResponse } from 'next/server'
+import connectMongoDB from '@/libs/mongodb';
+import Board from '@/models/board';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// GET 요청: 특정 ID의 게시판 가져오기
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params
-    const { newTitle: title, newDescription: description } =
-      await request.json()
-    if (!title || !description) {
-      return NextResponse.json(
-        { message: 'Title and description are required' },
-        { status: 400 }
-      )
+    await connectMongoDB();
+    const board = await Board.findById(params.id); // params.id 사용
+
+    if (!board) {
+      return NextResponse.json({ message: 'Board not found!' }, { status: 404 });
     }
-    await connectMongoDB()
-    const updatedBoard = await Board.findByIdAndUpdate(
-      id,
-      { title, description },
-      { new: true }
-    )
-    if (!updatedBoard) {
-      return NextResponse.json({ message: 'Board not found' }, { status: 404 })
-    }
-    return NextResponse.json(
-      { message: 'Board updated!', board: updatedBoard },
-      { status: 200 }
-    )
+    
+    return NextResponse.json({ board });
   } catch (error) {
-    console.error('Error in PUT /api/boards/[id]:', error)
+    console.error('Error in GET /api/boards/[id]:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// DELETE 요청: 특정 ID의 게시판 삭제하기
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params
-    await connectMongoDB()
-    const board = await Board.findOne({ _id: id })
-    if (!board) {
-      return NextResponse.json({ message: 'Board not found!' }, { status: 404 })
+    await connectMongoDB();
+    const { id } = await params; // params를 await하여 id를 가져옵니다.
+
+    const deletedBoard = await Board.findByIdAndDelete(id);
+    
+    if (!deletedBoard) {
+      return NextResponse.json({ message: 'Board not found' }, { status: 404 });
     }
-    return NextResponse.json({ board })
+
+    return NextResponse.json({ message: 'Board deleted' }, { status: 200 });
   } catch (error) {
-    console.error('Error in GET /api/boards/[id]', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error deleting board:', error);
+    return NextResponse.json({ message: 'Failed to delete board' }, { status: 500 });
   }
 }

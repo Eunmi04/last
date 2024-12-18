@@ -1,63 +1,46 @@
-import connectMongoDB from '@/libs/mongodb'
-import Board from '@/models/board'
-import { NextRequest, NextResponse } from 'next/server'
+import connectMongoDB from '@/libs/mongodb';
+import Board from '@/models/board';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  try {
-    const { title, description } = await request.json()
-    if (!title || !description) {
-      return NextResponse.json(
-        {
-          message: 'Title and description are required',
-        },
-        { status: 400 }
-      )
-    }
-    await connectMongoDB()
-    await Board.create({ title, description })
-    return NextResponse.json({ message: 'Board created' }, { status: 201 })
-  } catch (error) {
-    console.error('Error in POST /api/boards', error)
-    return NextResponse.json(
-      { message: 'Invalid server error' },
-      { status: 500 }
-    )
-  }
-}
-
+// GET 요청: 모든 게시판 가져오기
 export async function GET() {
   try {
-    await connectMongoDB()
-    const boards = await Board.find()
-    return NextResponse.json({ boards })
+    await connectMongoDB();
+    const boards = await Board.find().sort({ createdAt: -1 });
+    
+    return NextResponse.json({
+      success: true,
+      boards: boards,
+    });
   } catch (error) {
-    console.error('Error in GET /api/boards', error)
-    return NextResponse.json(
-      {
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
+    console.error('Error in GET /api/boards:', error);
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to fetch boards',
+      boards: [],
+    }, { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest) {
+// POST 요청: 새로운 게시판 생성
+export async function POST(request: NextRequest) {
   try {
-    const id = request.nextUrl.searchParams.get('id')
-    if (!id) {
-      return NextResponse.json({ message: 'ID is required' }, { status: 400 })
+    const { title } = await request.json(); // 제목만 받음
+    if (!title) {
+      return NextResponse.json(
+        { message: 'Title is required' },
+        { status: 400 }
+      );
     }
-    await connectMongoDB()
-    const deletedBoard = await Board.findByIdAndDelete(id)
-    if (!deletedBoard) {
-      return NextResponse.json({ message: 'Board not found' }, { status: 404 })
-    }
-    return NextResponse.json({ message: 'Board deleted!' }, { status: 200 })
+
+    await connectMongoDB();
+    const newBoard = await Board.create({ title }); // 새로운 게시판 생성
+    return NextResponse.json({ message: 'Board created', board: newBoard }, { status: 201 });
   } catch (error) {
-    console.error('Error in DELETE /api/boards', error)
+    console.error('Error in POST /api/boards:', error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'Internal Server Error' },
       { status: 500 }
-    )
+    );
   }
 }
