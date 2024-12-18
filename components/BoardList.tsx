@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import RemoveBtn from './RemoveBtn'; // RemoveBtn 컴포넌트 import
 import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
@@ -17,7 +17,7 @@ export default function BoardList() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''; // 배포 환경에서 API URL을 가져옴
 
-  const fetchBoards = async () => {
+  const fetchBoards = useCallback(async () => {
     try {
       setLoading(true);
       // 절대 URL을 사용하여 API 호출
@@ -48,11 +48,11 @@ export default function BoardList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchBoards();
-  }, []);
+  }, [fetchBoards]);
 
   const handleDeleteBoard = async (boardId: string) => {
     try {
@@ -131,9 +131,8 @@ export default function BoardList() {
             className="flex flex-col justify-between items-start bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
             style={{ height: '200px', width: '200px' }} // 정사각형 모양 유지
           >
-            {/* 정사각형 카드 디자인 */}
             <span className="text-xl font-semibold text-black">{board.title}</span>
-            <span className="text-sm text-gray-500">{new Date(board.createdAt).toLocaleDateString()}</span> {/* 작성 날짜 추가 */}
+            <span className="text-sm text-gray-500">{new Date(board.createdAt).toLocaleDateString()}</span>
             <RemoveBtn id={board._id} onDelete={() => handleDeleteBoard(board._id)} />
           </li>
         ))}
