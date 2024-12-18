@@ -3,10 +3,14 @@ import Board from '@/models/board';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET 요청: 특정 ID의 게시판 가져오기
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectMongoDB();
-    const board = await Board.findById(params.id); // params.id 사용
+    
+    // params를 await하여 id를 가져옵니다.
+    const { id } = await params;
+
+    const board = await Board.findById(id); // params.id 사용
 
     if (!board) {
       return NextResponse.json({ message: 'Board not found!' }, { status: 404 });
@@ -23,10 +27,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE 요청: 특정 ID의 게시판 삭제하기
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectMongoDB();
-    const { id } = await params; // params를 await하여 id를 가져옵니다.
+    
+    // params를 await하여 id를 가져옵니다.
+    const { id } = await params;
 
     const deletedBoard = await Board.findByIdAndDelete(id);
     
