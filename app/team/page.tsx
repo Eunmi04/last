@@ -7,22 +7,22 @@ export default function Home() {
     {
       name: "김건희",
       github: "https://github.com/000712",
-      image: "https://goyanghub.vercel.app/_next/image?url=%2Fimages%2Fteam%2Fgeonhee.jpg&w=256&q=75",
+      image: "/geonhee.jpg", // Update the URL
     },
     {
       name: "김혜정",
       github: "https://github.com/hyejeong22",
-      image: "https://goyanghub.vercel.app/_next/image?url=%2Fimages%2Fteam%2Fhyejeong.png&w=256&q=75",
+      image: "/hyejeong.png", // Update the URL
     },
     {
       name: "백서진",
       github: "https://github.com/tjwls11",
-      image: "https://goyanghub.vercel.app/_next/image?url=%2Fimages%2Fteam%2Fseojin.png&w=256&q=75",
+      image: "/seojin.png", // Update the URL
     },
     {
       name: "정은미",
       github: "https://github.com/Eunmi04",
-      image: "https://goyanghub.vercel.app/_next/image?url=%2Fimages%2Fteam%2Feunmi.jpg&w=256&q=75",
+      image: "/eunmi.jpg", // Update the URL
     },
   ];
 
@@ -31,7 +31,7 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center min-h-screen p-8">
         <Link href="https://goyanghub.vercel.app/" target="_blank" rel="noopener noreferrer" className="mb-8">
           <Image
-            src="/path/to/team.png" // Update this path as needed
+            src="/team.png" // Update this path as needed
             alt="팀 프로젝트"
             className="w-full h-auto rounded-lg shadow-lg mb-4 cursor-pointer"
             width={500} // Set appropriate width
