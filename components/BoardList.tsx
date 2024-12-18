@@ -15,31 +15,24 @@ export default function BoardList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''; // 배포 환경에서 API URL을 가져옴
+  // 기본 URL 설정
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://last-ivory.vercel.app';
 
   const fetchBoards = useCallback(async () => {
     try {
       setLoading(true);
-      // 절대 URL을 사용하여 API 호출
       const res = await fetch(`${apiUrl}/api/boards`, { 
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
       });
 
       if (!res.ok) {
-        throw new Error('서버 연결에 실패했습니다');
+        throw new Error(`서버 오류: ${res.status}`);
       }
 
       const data = await res.json();
-
-      if (!data.boards) {
-        throw new Error('데이터 형식이 올바르지 않습니다');
-      }
-
-      setBoards(data.boards);
+      setBoards(data.boards || []);
       setError(null);
     } catch (error) {
       console.error('Error loading boards:', error);
@@ -58,17 +51,13 @@ export default function BoardList() {
     try {
       const res = await fetch(`${apiUrl}/api/boards/${boardId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!res.ok) {
-        const errorData = await res.text(); // 텍스트로 응답 받기
-        throw new Error(errorData || '게시판 삭제에 실패했습니다.');
+        throw new Error(`삭제 실패: ${res.status}`);
       }
 
-      // 삭제 성공 시 상태 업데이트
       setBoards(prevBoards => prevBoards.filter(board => board._id !== boardId));
     } catch (error) {
       console.error('Error deleting board:', error);
