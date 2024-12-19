@@ -32,9 +32,9 @@ export default function Naver() {
         </div>
         <div className="hidden lg:flex space-x-4">
           <div className="flex gap-4 items-center">
+            <Link href="/about" className='text-white hover:text-gray-300 hover:underline'>ABOUT</Link>
             <Link href="/team" className='text-white hover:text-gray-300 hover:underline'>TEAM</Link>
             <Link href="/project" className='text-white hover:text-gray-300 hover:underline'>PROJECT</Link>
-            <Link href="/board" className='text-white hover:text-gray-300 hover:underline'>BOARD</Link>
           </div>
         </div>
         <div className="lg:hidden">
@@ -51,9 +51,9 @@ export default function Naver() {
       {menuOpen && (
         <div className="lg:hidden fixed right-0 top-16 bg-white p-6 rounded-md shadow-md w-64 z-50"> 
           <div className="flex flex-col space-y-4">
+            <Link href="/about" className='text-gray-800 hover:text-gray-600 hover:underline py-2'>ABOUT</Link>
             <Link href="/team" className='text-gray-800 hover:text-gray-600 hover:underline py-2'>TEAM</Link>
             <Link href="/project" className='text-gray-800 hover:text-gray-600 hover:underline py-2'>PROJECT</Link>
-            <Link href="/board" className='text-gray-800 hover:text-gray-600 hover:underline py-2'>BOARD</Link>
           </div>
         </div>
       )}
